@@ -1,0 +1,59 @@
+---
+- hosts: all
+  become: yes    
+  ignore_errors: yes
+  tasks:
+    - name: create user
+      user: 
+        name: john
+        comment: Admin Smith
+        group: root 
+
+    - name: create file 
+      file:
+        path: /opt/config 
+        state: touch 
+        mode: '0600'
+
+    - name: create directory 
+      file:
+        path: /opt/ans-dir  
+        state: directory
+        mode: '0755'
+
+    - name: create group
+      command: groupadd manager 
+
+    - name: install apache 
+      yum: 
+        name: httpd 
+        state: latest 
+
+    - name: start apache 
+      service: 
+          name: httpd 
+          started: started 
+          enabled: yes 
+
+    - name: download software 
+      get_url:
+        url: https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+        dest: /opt
+        mode: '0644'
+
+    - name: install packages
+      yum: 
+         name: "{{items}}"
+         state: present
+
+      loop: 
+         - git 
+         - wget
+         - httpd
+         - net-tools
+
+
+
+### important playbook 
+## author: jean Marie Tedonnang
+## date: 10/21/2022
